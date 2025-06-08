@@ -1,228 +1,167 @@
-# Augment VSCode 扩展本地存储完整清理工具
+# Augment Free
 
-基于对 Augment VSCode 扩展代码库的深入分析开发的专业清理工具，能够完整、系统地清理 Augment 扩展的所有本地存储数据。
+[English](#english) | [中文](#chinese)
 
-## 🎯 功能特性
+# <a name="chinese"></a>中文版
 
-### ✅ **完整清理覆盖**
-- **VSCode 扩展全局存储** (`globalStorage`)
-- **工作区存储** (`workspaceStorage`) 
-- **用户配置文件** (`settings.json`)
-- **扩展日志文件**
-- **扩展缓存数据**
-- **SQLite 数据库存储**
-- **Windows 注册表项**
+Augment Free 是一个用于清理AugmentCode相关数据的工具，可以在同一台电脑上无限次登录不同的账号，避免账号被锁定。
 
-### 🛡️ **安全保障**
-- **自动备份**: 清理前自动创建完整备份
-- **恢复功能**: 支持从备份完整恢复
-- **进程检测**: 自动检测 VSCode 运行状态
-- **详细日志**: 完整的操作日志记录
+## 功能特性
 
-### 🔧 **灵活操作**
-- **扫描模式**: 仅扫描不清理，查看存储数据
-- **选择性清理**: 支持单独清理特定类型数据
-- **批量清理**: 一键完整清理所有数据
-- **跨平台支持**: Windows/macOS/Linux
+- 📝 修改Telemetry ID
+  - 重置设备 ID 和机器 ID
+  - 自动备份原始数据
+  - 生成新的随机 ID
 
-## 📊 **基于代码分析的存储位置**
+- 🗃️ 数据库清理
+  - 清理 SQLite 数据库中的特定记录
+  - 自动备份数据库文件
+  - 删除包含 'augment' 关键字的记录
 
-通过对 Augment 扩展源码的深入分析，我们发现了以下关键存储机制：
+- 💾 工作区存储管理
+  - 清理工作区存储文件
+  - 自动备份工作区数据
 
-### **1. 全局存储 (GlobalState)**
-```javascript
-// 从 out/extension.js 分析得出
-async getValue(extensionId, key, scope) {
-    return await this._extensionContext.globalState.get(this.getKey(extensionId, key));
-}
+## 安装说明
 
-getKey(extensionId, key) {
-    return ["sidecar", extensionId, key].join(".");
-}
-```
+### Windows 用户（推荐）
 
-**存储路径**: `%APPDATA%\Code\User\globalStorage\Augment.vscode-augment\`
+**方式一：直接下载**
+- 下载：[augment-free.exe](./augment-free.exe)
+- 双击运行即可
 
-**存储内容**:
-- `sidecar.Augment.vscode-augment.*` 键值
-- `hasEverUsedAgent` 试用状态标记
-- `userTier` 用户层级信息
-- `sessionId` 会话标识符
-- `apiToken` 认证令牌
+**方式二：从 Releases 下载**
+- 从 [Releases](https://github.com/yourusername/augment-free/releases) 页面下载最新版本
 
-### **2. 工作区存储 (WorkspaceStorage)**
-```json
-// 从 package.json 分析得出
-"filenamePattern": "**/workspaceStorage/*/Augment.vscode-augment/Augment-Memories"
-```
+### 其他系统用户
 
-**存储路径**: `%APPDATA%\Code\User\workspaceStorage\{workspace-id}\Augment.vscode-augment\`
+1. 确保你的系统已安装 Python 3.10及以上
+2. 克隆此仓库到本地：
+   ```bash
+   git clone https://github.com/yourusername/augment-free.git
+   cd augment-free
+   ```
 
-**存储内容**:
-- `Augment-Memories` 记忆文件
-- 工作区特定的配置和状态
+## 使用方法
 
-### **3. 用户配置存储**
-```json
-// 从 package.json 分析得出
-"augment.advanced": {
-    "properties": {
-        "apiToken": {
-            "type": "string",
-            "description": "API token for Augment access."
-        }
-    }
-}
-```
+1. 退出AugmentCode插件
+2. 完全退出 VS Code
+3. 运行程序：
 
-**存储路径**: `%APPDATA%\Code\User\settings.json`
-
-**配置键**:
-- `augment.advanced.apiToken`
-- `augment.enableEmptyFileHint`
-- `augment.conflictingCodingAssistantCheck`
-- `augment.advanced.completionURL`
-- `augment.advanced.integrations`
-
-## 🚀 **使用方法**
-
-### **Python 版本**
-
-#### **安装依赖**
+**Windows 用户：**
 ```bash
-pip install psutil  # 可选，用于进程检测
+# 双击 augment-free.exe 或在命令行中运行
+augment-free.exe
 ```
 
-#### **基本用法**
+**其他系统用户：**
 ```bash
-# 扫描 Augment 数据
-python augment_cleaner.py --scan
-
-# 完整清理（自动备份）
-python augment_cleaner.py --clean
-
-# 完整清理（不备份）
-python augment_cleaner.py --clean --no-backup
-
-# 从备份恢复
-python augment_cleaner.py --restore "augment_backup/20241201_143022"
-
-# 选择性清理
-python augment_cleaner.py --clean-global      # 只清理全局存储
-python augment_cleaner.py --clean-workspace   # 只清理工作区存储
-python augment_cleaner.py --clean-settings    # 只清理用户配置
+python index.py
 ```
 
-### **PowerShell 版本**
+4. 重新启动 VS Code
+5. AugmentCode 插件中使用新的邮箱进行登录
 
-#### **基本用法**
-```powershell
-# 扫描 Augment 数据
-.\augment_cleaner.ps1 -Scan
+## 项目结构
 
-# 完整清理（自动备份）
-.\augment_cleaner.ps1 -Clean
-
-# 完整清理（不备份）
-.\augment_cleaner.ps1 -Clean -NoBackup
-
-# 从备份恢复
-.\augment_cleaner.ps1 -Restore "augment_backup\20241201_143022"
-
-# 选择性清理
-.\augment_cleaner.ps1 -CleanGlobal      # 只清理全局存储
-.\augment_cleaner.ps1 -CleanWorkspace   # 只清理工作区存储
-.\augment_cleaner.ps1 -CleanSettings    # 只清理用户配置
+```
+augment-free/
+├── index.py              # 主程序入口
+├── augutils/             # 工具类目录
+│   ├── json_modifier.py      # JSON 文件修改工具
+│   ├── sqlite_modifier.py    # SQLite 数据库修改工具
+│   └── workspace_cleaner.py  # 工作区清理工具
+└── utils/                # 通用工具目录
+    └── paths.py             # 路径管理工具
 ```
 
-## 📋 **操作步骤**
+## 贡献
 
-### **1. 准备工作**
-1. **关闭 VSCode**: 确保所有 VSCode 窗口已关闭
-2. **下载工具**: 下载 `augment_cleaner.py` 或 `augment_cleaner.ps1`
-3. **管理员权限**: 建议以管理员权限运行（用于注册表清理）
+欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
 
-### **2. 扫描数据**
+## 许可证
+
+此项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
+
+---
+
+# <a name="english"></a>English Version
+
+Augment Free is a tool for cleaning AugmentCode-related data, allowing unlimited logins with different accounts on the same computer while avoiding account lockouts.
+
+## Features
+
+- 📝 Telemetry ID Modification
+  - Reset device ID and machine ID
+  - Automatic backup of original data
+  - Generate new random IDs
+
+- 🗃️ Database Cleanup
+  - Clean specific records in SQLite database
+  - Automatic database file backup
+  - Remove records containing 'augment' keyword
+
+- 💾 Workspace Storage Management
+  - Clean workspace storage files
+  - Automatic workspace data backup
+
+## Installation
+
+### Windows Users (Recommended)
+
+**Method 1: Direct Download**
+- Download: [augment-free.exe](./augment-free.exe)
+- Double-click to run
+
+**Method 2: From Releases**
+- Download from [Releases](https://github.com/yourusername/augment-free/releases) page
+
+### Other Systems
+
+1. Ensure Python 3.10 or above is installed on your system
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/augment-free.git
+   cd augment-free
+   ```
+
+## Usage
+
+1. Exit the AugmentCode plugin
+2. Completely close VS Code
+3. Run the program:
+
+**Windows users:**
 ```bash
-python augment_cleaner.py --scan
+# Double-click augment-free.exe or run in command line
+augment-free.exe
 ```
-这将显示所有找到的 Augment 相关数据，不会进行任何删除操作。
 
-### **3. 执行清理**
+**Other systems:**
 ```bash
-python augment_cleaner.py --clean
-```
-这将：
-- 自动创建备份到 `augment_backup/` 目录
-- 清理所有 Augment 相关数据
-- 生成详细的操作日志
-
-### **4. 验证结果**
-1. 重新启动 VSCode
-2. 检查 Augment 扩展状态
-3. 确认试用限制已重置
-
-### **5. 恢复（如需要）**
-```bash
-python augment_cleaner.py --restore "augment_backup/20241201_143022"
+python index.py
 ```
 
-## 📁 **文件结构**
+4. Restart VS Code
+5. Log in to the AugmentCode plugin with a new email
+
+## Project Structure
 
 ```
-augment_cleaner/
-├── augment_cleaner.py          # Python 版本清理工具
-├── augment_cleaner.ps1         # PowerShell 版本清理工具
-├── AUGMENT_CLEANER_README.md   # 使用说明文档
-├── augment_cleaner.log         # 操作日志文件
-└── augment_backup/             # 备份目录
-    └── 20241201_143022/        # 时间戳命名的备份
-        ├── globalStorage/      # 全局存储备份
-        ├── workspaceStorage/   # 工作区存储备份
-        └── settings.json       # 用户配置备份
+augment-free/
+├── index.py              # Main program entry
+├── augutils/             # Utility classes directory
+│   ├── json_modifier.py      # JSON file modification tool
+│   ├── sqlite_modifier.py    # SQLite database modification tool
+│   └── workspace_cleaner.py  # Workspace cleanup tool
+└── utils/                # Common utilities directory
+    └── paths.py             # Path management tool
 ```
 
-## ⚠️ **重要提醒**
+## Contributing
 
-### **法律和伦理考虑**
-- 此工具仅用于**学习和研究目的**
-- 使用前请确保符合软件许可协议
-- 建议购买正版 Augment Professional 授权
-- 不建议用于商业环境或生产用途
+Issues and Pull Requests are welcome to help improve this project.
 
-### **技术风险**
-- 清理操作不可逆，请务必先备份
-- 可能影响其他 VSCode 扩展的正常使用
-- 建议在测试环境中先行验证
+## License
 
-### **使用限制**
-- 需要管理员权限（用于注册表操作）
-- 仅支持标准 VSCode 安装路径
-- 不支持便携版或自定义安装路径
-
-## 🔧 **技术实现**
-
-### **核心技术**
-- **存储路径分析**: 基于 VSCode 扩展 API 规范
-- **数据结构解析**: 深入分析 Augment 存储格式
-- **安全备份机制**: 完整的数据备份和恢复
-- **跨平台兼容**: 支持 Windows/macOS/Linux
-
-### **代码质量**
-- **类型注解**: 完整的 Python 类型提示
-- **错误处理**: 全面的异常捕获和处理
-- **日志记录**: 详细的操作日志和状态跟踪
-- **代码注释**: 清晰的中文注释和文档
-
-## 📞 **支持和反馈**
-
-如果在使用过程中遇到问题或有改进建议，请加微信：jszmkx4
-
-1. 检查操作日志文件 `augment_cleaner.log`
-2. 确认 VSCode 已完全关闭
-3. 验证是否有足够的系统权限
-4. 检查备份文件是否完整
-
-## 📄 **许可证**
-
-本工具基于 MIT 许可证开源，仅供学习和研究使用。使用者需自行承担使用风险，并确保遵守相关法律法规和软件许可协议。
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. 
