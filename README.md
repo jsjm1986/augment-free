@@ -126,18 +126,12 @@ python index.py
 
 <div align="center">
 
-```mermaid
-graph LR
-    A[1. 退出 AugmentCode] --> B[2. 关闭 VS Code]
-    B --> C[3. 运行工具]
-    C --> D[4. 重启 VS Code]
-    D --> E[5. 新账号登录]
+**🔄 五步完成账号切换**
 
-    style A fill:#ff6b6b
-    style B fill:#ffa726
-    style C fill:#66bb6a
-    style D fill:#42a5f5
-    style E fill:#ab47bc
+```
+🔴 步骤1    🟠 步骤2    🟢 步骤3    🔵 步骤4    🟣 步骤5
+   ↓         ↓         ↓         ↓         ↓
+退出插件 → 关闭VS Code → 运行工具 → 重启VS Code → 新账号登录
 ```
 
 </div>
